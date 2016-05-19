@@ -1,0 +1,365 @@
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# + Indiana University CEEM    /    GlueX/Hall-D Jefferson Lab                    +
+# + 72 channel 12/14 bit 125 MSPS ADC module with digital signal processing       +
+# + Processor FPGA (Trigger handling, readout from FE FPGA, processing)           +
+# + Gerard Visser - gvisser@indiana.edu - 812 855 7880                            +
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# $Id: processor.ucf 27 2012-04-24 13:40:26Z gvisser $
+
+#  NET "aclk" TNM_NET= "aclk";
+#  TIMESPEC "TS_aclk" = PERIOD "aclk" 8 ns HIGH 50%;
+#  TIMESPEC "TS_aclk" = PERIOD "aclk" 8 ns HIGH 50%; INPUT_JITTER 0.2 ns;
+
+# timespec on 125MHz interface clock
+NET "aclk_p" TNM_NET = "aclk_p";
+TIMESPEC TS_aclk_p = PERIOD "aclk_p" 8 ns HIGH 50 % INPUT_JITTER 0.2 ns;
+
+# timespec on serial interface clock 
+NET "sclk" TNM_NET = "sclk";
+TIMESPEC TS_sclk = PERIOD "sclk" 25 ns;
+  
+# timespec on 80MHz interface clock 
+NET "osc" TNM_NET = "osc";
+TIMESPEC TS_osc = PERIOD "osc" 12.5 ns HIGH 50 %;
+  
+################################################################################################
+# diff IOSTANDARDs applied in buffer instantiation in VHDL source
+NET "aclk_p" LOC = A8;
+NET "aclk_n" LOC = B8;
+
+NET "p0_trg_p[0]" LOC = C18;
+NET "p0_trg_n[0]" LOC = B19;
+NET "p0_trg_p[1]" LOC = A16;
+NET "p0_trg_n[1]" LOC = A17;
+NET "p0_trg_p[2]" LOC = B20;
+NET "p0_trg_n[2]" LOC = A19;
+NET "p0_busy" LOC = C17;
+NET "p0_busy" IOSTANDARD = LVCMOS25;
+NET "p0_busy" DRIVE = 8;
+NET "p2_trg_p[0]" LOC = C22;
+NET "p2_trg_n[0]" LOC = C21;
+NET "p2_trg_p[1]" LOC = F22;
+NET "p2_trg_n[1]" LOC = E22;
+NET "p2_trg_p[2]" LOC = H22;
+NET "p2_trg_n[2]" LOC = G22;
+#INST "p2_busy"      LOC=K22   | IOSTANDARD=LVCMOS25 | DRIVE=8;
+NET "muloth" LOC = T1;
+NET "muloth" IOSTANDARD = LVCMOS25;
+# maybe 8??
+NET "aFeWrCmd" LOC = U1;
+NET "aFeWrCmd" IOSTANDARD = LVCMOS25;
+NET "aFeWrCmd" DRIVE = 8;
+NET "aFeWrCmd" SLEW = FAST;
+## at least for a test right now
+NET "bFeWrCmd" LOC = W1;
+NET "bFeWrCmd" IOSTANDARD = LVCMOS25;
+NET "bFeWrCmd" DRIVE = 8;
+NET "bFeWrCmd" SLEW = FAST;
+NET "led_trig_n" LOC = K3;
+NET "led_trig_n" IOSTANDARD = LVCMOS25;
+NET "led_trig_n" DRIVE = 4;
+NET "led_busy_n" LOC = K2;
+NET "led_busy_n" IOSTANDARD = LVCMOS25;
+NET "led_busy_n" DRIVE = 4;
+
+NET "sclk" LOC = F10;
+NET "sclk" IOSTANDARD = LVCMOS25;
+NET "sin" LOC = V17;
+NET "sin" IOSTANDARD = LVCMOS25;
+NET "sout" LOC = F1;
+NET "sout" IOSTANDARD = LVCMOS25;
+NET "sout" DRIVE = 8;
+#INST "softRst"      LOC=W17   | IOSTANDARD=LVCMOS25;
+NET "sbao" LOC = E19;
+NET "sbao" IOSTANDARD = LVCMOS25;
+NET "sbao" DRIVE = 8;
+#INST "sbai"         LOC=H20   | IOSTANDARD=LVCMOS33;
+#INST "sbbi"         LOC=C19   | IOSTANDARD=LVCMOS33;
+
+NET "osc" LOC = F11;
+NET "osc" IOSTANDARD = LVCMOS25;
+#INST "rclk"         LOC=V12   | IOSTANDARD=LVCMOS25;
+#INST "wclk"         LOC=B9    | IOSTANDARD=LVCMOS25;
+#INST "rclko"        LOC=V13   | IOSTANDARD=LVCMOS25 | DRIVE=8       | FAST;
+# maybe 8 or 12?? (is ext. buffered anyway!)
+NET "arclko" LOC = U2;
+NET "arclko" IOSTANDARD = LVCMOS25;
+NET "arclko" DRIVE = 16;
+NET "arclko" SLEW = FAST;
+# maybe 8 or 12?? (is ext. buffered anyway!)
+NET "brclko" LOC = W2;
+NET "brclko" IOSTANDARD = LVCMOS25;
+NET "brclko" DRIVE = 16;
+NET "brclko" SLEW = FAST;
+#INST "wclko"        LOC=C8    | IOSTANDARD=LVCMOS25 | DRIVE=8       | FAST;
+INST "p2v_fwclko"   LOC=A13   | IOSTANDARD=LVCMOS25 | DRIVE=12      | FAST;
+NET "fwclko" LOC = A11;
+NET "fwclko" IOSTANDARD = LVCMOS25;
+NET "fwclko" DRIVE = 12;
+NET "fwclko" SLEW = FAST;
+
+INST "aFeRdCmd" IOSTANDARD = LVCMOS25;
+INST "aFeRdCmd" DRIVE = 8;
+INST "aFeRdCmd" SLEW = FAST;
+INST "aFeRdCmd"     LOC=N1    | IOSTANDARD=LVCMOS25 | DRIVE=8       | FAST;
+INST "aFeRdCmd" LOC = N1;
+NET "aFeRdStart" LOC = M1;
+NET "aFeRdStart" IOSTANDARD = LVCMOS25;
+NET "aFeRdStart" DRIVE = 8;
+NET "aFeRdStart" SLEW = FAST;
+#INST "aAF_n"        LOC=P3    | IOSTANDARD=LVCMOS25;  NET "aAF_n"        PULLUP; #LVCMOS25
+NET "aFeRdBusy_n" LOC = N3;
+NET "aFeRdBusy_n" IOSTANDARD = LVCMOS25;
+NET "aFeRdBusy_n" PULLUP;
+#INST "aFeRdErr_n"   LOC=R1    | IOSTANDARD=LVCMOS25;  NET "aFeRdErr_n"   PULLUP;
+#NET "aFeRdErr_n" CLOCK_DEDICATED_ROUTE = FALSE;
+
+################################################################
+
+#TIMEGRP "TG_AFE" = PADS("aEvbD[*]");
+#TIMEGRP "TG_AFE" OFFSET = IN 0.0 ns VALID 8 ns BEFORE "aclk_p" RISING;
+#
+#TIMEGRP "TG_BFE" = PADS("bEvbD[*]");
+#TIMEGRP "TG_BFE" OFFSET = IN 0.0 ns VALID 8 ns BEFORE "aclk_p" RISING;
+
+################################################################
+
+INST "aEvbHold" IOSTANDARD = LVCMOS25;
+INST "aEvbHold" DRIVE = 8;
+INST "aEvbHold" SLEW = FAST;
+INST "aEvbHold"     LOC=P1    | IOSTANDARD=LVCMOS25 | DRIVE=8       | FAST;
+INST "aEvbHold" LOC = P1;
+INST "aEvbTokOut" IOSTANDARD = LVCMOS25;
+INST "aEvbTokOut" DRIVE = 8;
+INST "aEvbTokOut" SLEW = FAST;
+INST "aEvbTokOut"   LOC=Y8    | IOSTANDARD=LVCMOS25 | DRIVE=8       | FAST;
+INST "aEvbTokOut" LOC = Y8;
+NET "aEvbTokIn" LOC = M3;
+NET "aEvbTokIn" IOSTANDARD = LVCMOS25;
+NET "aEvbTokIn" PULLDOWN;
+NET "aEvbD[0]" LOC = W10;
+NET "aEvbD[0]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[0]" PULLDOWN;
+NET "aEvbD[1]" LOC = U8;
+NET "aEvbD[1]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[1]" PULLDOWN;
+NET "aEvbD[2]" LOC = W6;
+NET "aEvbD[2]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[2]" PULLDOWN;
+NET "aEvbD[3]" LOC = U10;
+NET "aEvbD[3]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[3]" PULLDOWN;
+NET "aEvbD[4]" LOC = U12;
+NET "aEvbD[4]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[4]" PULLDOWN;
+NET "aEvbD[5]" LOC = AA12;
+NET "aEvbD[5]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[5]" PULLDOWN;
+NET "aEvbD[6]" LOC = W13;
+NET "aEvbD[6]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[6]" PULLDOWN;
+NET "aEvbD[7]" LOC = U9;
+NET "aEvbD[7]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[7]" PULLDOWN;
+NET "aEvbD[8]" LOC = Y6;
+NET "aEvbD[8]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[8]" PULLDOWN;
+NET "aEvbD[9]" LOC = AA15;
+NET "aEvbD[9]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[9]" PULLDOWN;
+NET "aEvbD[10]" LOC = Y14;
+NET "aEvbD[10]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[10]" PULLDOWN;
+NET "aEvbD[11]" LOC = W5;
+NET "aEvbD[11]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[11]" PULLDOWN;
+NET "aEvbD[12]" LOC = Y11;
+NET "aEvbD[12]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[12]" PULLDOWN;
+NET "aEvbD[13]" LOC = U13;
+NET "aEvbD[13]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[13]" PULLDOWN;
+NET "aEvbD[14]" LOC = W4;
+NET "aEvbD[14]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[14]" PULLDOWN;
+NET "aEvbD[15]" LOC = Y4;
+NET "aEvbD[15]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[15]" PULLDOWN;
+NET "aEvbD[16]" LOC = AB12;
+NET "aEvbD[16]" IOSTANDARD = LVCMOS25;
+NET "aEvbD[16]" PULLDOWN;
+#INST "aEvbD<17>"    LOC=AB15  | IOSTANDARD=LVCMOS25;  NET "aEvbD<17>"    PULLDOWN;
+
+# pullup/downs here on B data inputs are required in case mezzanine board is not installed. done on A (above) for consistency.
+INST "bFeRdCmd" IOSTANDARD = LVCMOS25;
+INST "bFeRdCmd" DRIVE = 8;
+INST "bFeRdCmd" SLEW = FAST;
+INST "bFeRdCmd"     LOC=P4    | IOSTANDARD=LVCMOS25 | DRIVE=8       | FAST;
+INST "bFeRdCmd" LOC = P4;
+NET "bFeRdStart" LOC = T5;
+NET "bFeRdStart" IOSTANDARD = LVCMOS25;
+NET "bFeRdStart" DRIVE = 8;
+NET "bFeRdStart" SLEW = FAST;
+#INST "bAF_n"        LOC=W3    | IOSTANDARD=LVCMOS25;  NET "bAF_n"        PULLUP; #LVCMOS25
+NET "bFeRdBusy_n" LOC = V3;
+NET "bFeRdBusy_n" IOSTANDARD = LVCMOS25;
+NET "bFeRdBusy_n" PULLUP;
+#INST "bFeRdErr_n"   LOC=U3    | IOSTANDARD=LVCMOS25;  NET "bFeRdErr_n"   PULLUP;
+#NET "bFeRdErr_n" CLOCK_DEDICATED_ROUTE = FALSE;
+
+INST "bEvbHold" IOSTANDARD = LVCMOS25;
+INST "bEvbHold" DRIVE = 8;
+INST "bEvbHold" SLEW = FAST;
+INST "bEvbHold"     LOC=T4    | IOSTANDARD=LVCMOS25 | DRIVE=8       | FAST;
+INST "bEvbHold" LOC = T4;
+INST "bEvbTokOut" IOSTANDARD = LVCMOS25;
+INST "bEvbTokOut" DRIVE = 8;
+INST "bEvbTokOut" SLEW = FAST;
+INST "bEvbTokOut"   LOC=Y1    | IOSTANDARD=LVCMOS25 | DRIVE=8       | FAST;
+INST "bEvbTokOut" LOC = Y1;
+NET "bEvbTokIn" LOC = T3;
+NET "bEvbTokIn" IOSTANDARD = LVCMOS25;
+NET "bEvbTokIn" PULLDOWN;
+NET "bEvbD[0]" LOC = AB4;
+NET "bEvbD[0]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[0]" PULLDOWN;
+NET "bEvbD[1]" LOC = AA4;
+NET "bEvbD[1]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[1]" PULLDOWN;
+NET "bEvbD[2]" LOC = AA6;
+NET "bEvbD[2]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[2]" PULLDOWN;
+NET "bEvbD[3]" LOC = AB6;
+NET "bEvbD[3]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[3]" PULLDOWN;
+NET "bEvbD[4]" LOC = AB5;
+NET "bEvbD[4]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[4]" PULLDOWN;
+NET "bEvbD[5]" LOC = AB7;
+NET "bEvbD[5]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[5]" PULLDOWN;
+NET "bEvbD[6]" LOC = AB8;
+NET "bEvbD[6]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[6]" PULLDOWN;
+NET "bEvbD[7]" LOC = Y7;
+NET "bEvbD[7]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[7]" PULLDOWN;
+NET "bEvbD[8]" LOC = Y5;
+NET "bEvbD[8]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[8]" PULLDOWN;
+NET "bEvbD[9]" LOC = AB9;
+NET "bEvbD[9]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[9]" PULLDOWN;
+NET "bEvbD[10]" LOC = W9;
+NET "bEvbD[10]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[10]" PULLDOWN;
+NET "bEvbD[11]" LOC = AB2;
+NET "bEvbD[11]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[11]" PULLDOWN;
+NET "bEvbD[12]" LOC = AA8;
+NET "bEvbD[12]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[12]" PULLDOWN;
+NET "bEvbD[13]" LOC = AB10;
+NET "bEvbD[13]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[13]" PULLDOWN;
+NET "bEvbD[14]" LOC = AA1;
+NET "bEvbD[14]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[14]" PULLDOWN;
+NET "bEvbD[15]" LOC = Y2;
+NET "bEvbD[15]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[15]" PULLDOWN;
+NET "bEvbD[16]" LOC = AB11;
+NET "bEvbD[16]" IOSTANDARD = LVCMOS25;
+NET "bEvbD[16]" PULLDOWN;
+#INST "bEvbD<17>"    LOC=AA10  | IOSTANDARD=LVCMOS25;  NET "bEvbD<17>"    PULLDOWN;
+
+#INST "p2v_fWen_n"   LOC=A14   | IOSTANDARD=LVCMOS25 | DRIVE=8;
+#INST "p2v_fD<16>"   LOC=B15   | IOSTANDARD=LVCMOS25 | DRIVE=8;
+#INST "p2v_fD<17>"   LOC=A9    | IOSTANDARD=LVCMOS25 | DRIVE=8;
+NET "p2v_spare0" LOC = A3;
+NET "p2v_spare0" IOSTANDARD = LVCMOS25;
+NET "p2v_spare0" PULLUP; 
+
+NET "p2v_spare1" LOC = A4;
+NET "p2v_spare1" IOSTANDARD = LVCMOS25;
+NET "p2v_spare1" DRIVE = 8;
+NET "p2v_spare1" SLEW = FAST;
+#INST "fFull_n"      LOC=A10   | IOSTANDARD=LVCMOS25;
+NET "fLoad_n" LOC = E13;
+NET "fLoad_n" IOSTANDARD = LVCMOS25;
+NET "fLoad_n" DRIVE = 8;
+NET "fWen_n" LOC = C12;
+NET "fWen_n" IOSTANDARD = LVCMOS25;
+NET "fWen_n" DRIVE = 8;
+NET "fDout[0]" LOC = D15;
+NET "fDout[0]" IOSTANDARD = LVCMOS25;
+NET "fDout[0]" DRIVE = 8;
+NET "fDout[1]" LOC = B3;
+NET "fDout[1]" IOSTANDARD = LVCMOS25;
+NET "fDout[1]" DRIVE = 8;
+NET "fDout[2]" LOC = C2;
+NET "fDout[2]" IOSTANDARD = LVCMOS25;
+NET "fDout[2]" DRIVE = 8;
+NET "fDout[3]" LOC = C13;
+NET "fDout[3]" IOSTANDARD = LVCMOS25;
+NET "fDout[3]" DRIVE = 8;
+NET "fDout[4]" LOC = E3;
+NET "fDout[4]" IOSTANDARD = LVCMOS25;
+NET "fDout[4]" DRIVE = 8;
+NET "fDout[5]" LOC = G3;
+NET "fDout[5]" IOSTANDARD = LVCMOS25;
+NET "fDout[5]" DRIVE = 8;
+NET "fDout[6]" LOC = D14;
+NET "fDout[6]" IOSTANDARD = LVCMOS25;
+NET "fDout[6]" DRIVE = 8;
+NET "fDout[7]" LOC = F4;
+NET "fDout[7]" IOSTANDARD = LVCMOS25;
+NET "fDout[7]" DRIVE = 8;
+NET "fDout[8]" LOC = F3;
+NET "fDout[8]" IOSTANDARD = LVCMOS25;
+NET "fDout[8]" DRIVE = 8;
+NET "fDout[9]" LOC = E12;
+NET "fDout[9]" IOSTANDARD = LVCMOS25;
+NET "fDout[9]" DRIVE = 8;
+NET "fDout[10]" LOC = G5;
+NET "fDout[10]" IOSTANDARD = LVCMOS25;
+NET "fDout[10]" DRIVE = 8;
+NET "fDout[11]" LOC = C6;
+NET "fDout[11]" IOSTANDARD = LVCMOS25;
+NET "fDout[11]" DRIVE = 8;
+NET "fDout[12]" LOC = E11;
+NET "fDout[12]" IOSTANDARD = LVCMOS25;
+NET "fDout[12]" DRIVE = 8;
+NET "fDout[13]" LOC = C4;
+NET "fDout[13]" IOSTANDARD = LVCMOS25;
+NET "fDout[13]" DRIVE = 8;
+NET "fDout[14]" LOC = D6;
+NET "fDout[14]" IOSTANDARD = LVCMOS25;
+NET "fDout[14]" DRIVE = 8;
+NET "fDout[15]" LOC = C9;
+NET "fDout[15]" IOSTANDARD = LVCMOS25;
+NET "fDout[15]" DRIVE = 8;
+NET "fDout[16]" LOC = D10;
+NET "fDout[16]" IOSTANDARD = LVCMOS25;
+NET "fDout[16]" DRIVE = 8;
+NET "fDout[17]" LOC = D9;
+NET "fDout[17]" IOSTANDARD = LVCMOS25;
+NET "fDout[17]" DRIVE = 8;
+NET "fMRst_n" LOC = C1;
+NET "fMRst_n" IOSTANDARD = LVCMOS25;
+NET "fMRst_n" DRIVE = 8;
+
+# PULSER TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+NET "pulser_n" LOC = AB17;
+NET "pulser_n" IOSTANDARD = LVCMOS25;
+
+NET "csr[*]" TIG = TS_aclk_p;
+NET "trig_source[*]" TIG = TS_aclk_p;
+NET "CTRL2[*]" TIG = TS_aclk_p;
+NET "BLOCK_SIZE[*]" TIG = TS_aclk_p;
+NET "pulser_trig_delay_width[*]" TIG = TS_aclk_p;
+NET "trig_limit[*]" TIG = TS_aclk_p;
+#NET "p2v_spare0" TIG = TS_aclk_p;
+#NET "RESET_N_Q" TIG = TS_aclk_p;
+#NET "RESET_N_2Q" TIG = TS_aclk_p;
+#NET "RESET_N_3Q" TIG = TS_aclk_p;
